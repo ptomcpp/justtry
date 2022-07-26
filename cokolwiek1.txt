@@ -1,3 +1,56 @@
-aaaa
-wg
-uuuu
+
+/******************************************************************************
+
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+vector <int> sortowanie(vector<int> v)
+{
+ int pivot=v[0];
+
+ vector<int> mniejsze;
+ vector<int> wieksze; 
+ 
+ 
+ for(auto licznik:v)
+ {
+ if(licznik>pivot)
+ {
+     wieksze.push_back(licznik);
+ }
+ else
+ {
+     mniejsze.push_back(licznik);
+ }
+ }
+ cout<<"wieksze: ";
+ for(auto l:wieksze) cout<<"  "<<l;
+ cout<<endl;
+ cout<<"mniejsze: ";
+ for(auto r:mniejsze)cout<<"  "<<r;
+ cout<<endl<<"________________________________";
+ 
+//  while(wieksze.size()>1)
+//  {
+//      sortowanie(wieksze);
+//  }
+    return wieksze;
+}
+
+
+int main()
+{
+vector <int> glowny{7,4,6,11,-5,13,2,-19};
+sortowanie(glowny);
+
+
+    return 0;
+}
+
