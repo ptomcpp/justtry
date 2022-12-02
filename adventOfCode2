@@ -1,0 +1,49 @@
+#include <iostream>
+#include <vector>
+#include <memory>
+#include <fstream>
+
+const int scorestable[3][3]={{4,8,3},
+                             {1,5,9},
+                             {7,2,6}};
+
+int pointsCount( char enemy,char mine)
+{
+    return scorestable[(static_cast<int>(enemy))-65][static_cast<int>(mine)-88];
+}
+
+void downloadingData(std::vector<char>& mine,std::vector<char>& enemy)
+{
+    std::fstream answerFile;
+    answerFile.open(“fileData.txt”,ios::in); 
+    if(answerFile.good()!=false)
+    {
+        std::string line;
+        while(getline(answerFile,line))
+        {
+            enemy.push_back(line.at(0));
+            mine.push_back(line.at(2));
+        }
+    }
+}
+
+int sumAllPoints(std::vector<char>& mine,std::vector<char>& enemy)
+{
+    int totalScore=0;
+    for(int i=0;i<mine.size();i++)
+    {
+        totalScore+=pointsCount(enemy.at(i),mine.at(i));
+    }
+    return totalScore;
+}
+
+
+int main ()
+{
+std::vector<char> mySign;
+std::vector<char> enemySign;
+downloadingData(mySign,enemySign);
+std::cout<<sumAllPoints(mySign,enemySign);
+return 0;
+}
+
