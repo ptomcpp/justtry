@@ -1,0 +1,125 @@
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include <algorithm>
+#include <string>
+#include <stack>
+
+class containerStack
+{
+    public:
+    containerStack(int stackNum,const std::vector<std::string>& containerPlan)
+    :stackNumber{stackNum}
+    {
+        for(auto line:containerPlan)
+        {
+            char crate=line.at(stackNumber*4-2);
+            if(crate!=' ')containers.push_back(crate);
+        }    
+    }
+    char popContainer()
+    {
+        char topContainer=containers.back();
+        containers.pop_back();
+        return topContainer;
+    }
+    void pushContainer(char containter)
+    {
+        containers.push_back(containter);
+    }
+    private:
+    int stackNumber;
+    std::string containers;
+};
+
+void readInputFile(std::vector<std::string> &,std::vector<std::string> &);
+std::vector<int> dataConverter(std::string);
+std::vector<containerStack> creatingStacks(const std::vector<std::string>&);
+std::vector<int> convertInstructions(const std::vector<std::string>&);
+void moveCrates(std::vector<containerStack>&,std::vector<int>&);
+std::string readTopContainers( std::vector<containerStack>&);
+
+
+
+
+
+int main()
+{
+    std::vector<std::string> containerPlan;
+    std::vector<std::string> instructions;
+    readInputFile(containerPlan,instructions);
+    std::vector<containerStack> containerStacks=creatingStacks(containerPlan);
+    std::vector<int> convertedInstructions=convertInstructions(instructions);
+    moveCrates(containerStacks,convertedInstructions);
+    std::cout<<readTopContainers(containerStacks);
+
+    return 0;
+}
+
+
+
+void readInputFile(std::vector<std::string> &containerPlan,std::vector<std::string> &instructions )
+{
+    std::fstream answerFile;
+    answerFile.open("supplyStack.txt");
+    std::string line;
+    int lineCounter{};
+    while (getline(answerFile, line))
+    {
+        if(lineCounter<10) containerPlan.push_back(line);
+        else if(lineCounter>10) instructions.push_back(line);
+        lineCounter++;
+    }
+}
+
+std::vector<containerStack> creatingStacks(const std::vector<std::string>& containerPlan)
+{
+    std::vector<containerStack> containerStacks;
+    for(int i=1;i<10;i++)
+    {
+        containerStacks.push_back(containerStack(i,containerPlan));
+    }
+    return containerStacks;
+}
+
+std::vector<int> convertInstructions(const std::vector<std::string> &instructions)
+{
+    std::vector<int> convertedInstructions;
+    for(auto line: instructions)
+    {
+        if(line.at(6)==' ')
+        {
+            convertedInstructions.push_back(line.at(5) - '0');
+            convertedInstructions.push_back(line.at(12) -'0');
+            convertedInstructions.push_back(line.at(17) - '0');
+        }
+        else 
+        {
+        convertedInstructions.push_back(std::stoi(line.substr(5,2)));
+        convertedInstructions.push_back(line.at(13) -'0');
+        convertedInstructions.push_back(line.at(18) - '0');
+        }
+    }
+    return convertedInstructions;
+}
+
+void moveCrates(std::vector<containerStack>&containers ,std::vector<int>&instructions)
+{
+    for(int i=0;i<instructions.size();i+=3)
+    { 
+        for(int j=0;j<instructions.at(i);j++)
+        {
+            containers.at(i+2).pushContainer(containers.at(i+1).popContainer());
+        }
+    }
+}
+
+std::string readTopContainers( std::vector<containerStack>& stacks)
+{
+    std::string topContainersSymbols;
+    for(auto containerStack:stacks)
+    {
+        topContainersSymbols.push_back(containerStack.popContainer());
+    }
+    return topContainersSymbols;
+}
