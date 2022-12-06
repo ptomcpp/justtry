@@ -3,8 +3,7 @@
 
 int findMarker(std::string signal,int markersize)
 {
-    
-        for(int i=markersize;i<signal.length();i++)
+    for(int i=markersize;i<signal.length();i++)
     {
         std::string markerPart=signal.substr(i-markersize,markersize);
         bool find=true;
