@@ -1,0 +1,173 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+
+class file
+{
+    public:
+    file(int m):size{m}
+    {};
+    int getSize()
+    {
+        return size;
+    }
+    private:
+    int size;
+};
+
+class dir
+{
+    public:
+    dir(std::string n):name{n}
+    { };
+
+    void setSubdirectorie(dir* subdir )
+    {
+        subdirectories.push_back(subdir);
+    }
+    void addFile(int sizeOfFile)
+    {
+        file newFile(sizeOfFile);
+        filesList.push_back(newFile);
+    }
+    int getSize()
+    {
+        int totalSize{};
+        for(auto file:filesList)
+        {
+            totalSize+=file.getSize();
+        }
+        for(auto dir:subdirectories)
+        {
+            totalSize+=dir->getSize();
+        }
+        return totalSize;
+    }
+    std::string getName()
+    {
+        return name;
+    }
+
+
+    bool operator==(dir other)
+    {
+        if(other.getName()==name)
+        {
+            return true;
+        }
+        else return false;
+    }
+
+private:
+std::vector<file> filesList;
+std::vector<dir*> subdirectories;
+std::string name;
+};
+
+static std::vector<dir*> dirList;
+
+dir* checkIfRegisered(dir newDir)
+{
+    for(auto dirOnList:dirList)
+    {
+        if(*dirOnList==newDir)return dirOnList;
+    }
+    return nullptr;
+}
+
+void registerDir(dir* dirAdress)
+{
+    dirList.push_back(dirAdress);
+}
+
+std::vector<std::string> readInputFile()
+{
+    std::vector<std::string> commandsList;
+    std::fstream answerFile;
+    answerFile.open("commands.txt");
+    std::string line;
+    while (getline(answerFile, line))
+    {
+     commandsList.push_back(line);
+    }
+    return commandsList;
+}
+
+
+void translateCommands(dir outerDir,std::vector<std::string> commandList)
+{
+    for(int i=0;i<commandList.size();i++)
+    {
+        std::string commandBegin=commandList.at(i).substr(0,4);
+        if((commandBegin=="$ cd")&&commandList.at(i).at(5)!='.')
+        {
+            std::vector<std::string> listOfFiles;
+            for(int j=i+2;j<commandList.size();j++)
+            {
+                if(commandList.at(j).at(0)!='$')
+                {
+                    listOfFiles.push_back(commandList.at(j));
+                }
+                else break;
+            }
+
+        }
+    }
+}
+
+void createInsideOfFile(std::string name,std::vector<std::string> &listOfFiles)
+{
+    std::string nameOfDir=name.substr(5);
+    dir newDir(nameOfDir);
+    for(auto file:listOfFiles)
+    {
+        if(file.at(0)=='d')
+        {
+           std::string nameOfSubdir=file.substr(4);
+            dir subDir(nameOfSubdir);
+
+        }
+        else 
+        {
+            std::string sizeOfFile;
+            for(auto letter:file)
+            {
+                if(isdigit(letter))
+                {
+                    sizeOfFile.push_back(letter);
+                }
+                else break;
+            }
+            newDir.addFile(stoi(sizeOfFile));
+        }
+    }
+}
+
+int main()
+{
+std::vector<std::string> commandList=readInputFile();
+dir outest("/");
+translateCommands(outest,commandList);
+dir test1("1");
+dir test2("2");
+dir test3("3");
+registerDir(&test1);
+registerDir(&test2);
+registerDir(&test3);
+
+dirList.at(2)->addFile(100);
+dirList.at(1)->addFile(55);
+std::string one="1";
+if(*dirList.at(0)==one)
+{
+test1.addFile(100);
+test1.addFile(100);
+test1.setSubdirectorie(&test2);
+test2.setSubdirectorie(&test3);
+std::cout<<test3.getSize()<<"\n";
+std::cout<<test2.getSize()<<"\n";
+std::cout<<test1.getSize(); 
+}
+
+    return 0;
+}
