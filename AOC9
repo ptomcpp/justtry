@@ -1,0 +1,168 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <cmath>
+
+enum direction
+{
+    RIGHT=0,
+    UP,
+    LEFT,
+    DOWN
+};
+
+struct Knot;
+class KnotMovementRecorder;
+std::vector<std::string> readInputFile();
+direction convertToDirection(char letter);
+std::vector<direction> convertToInstructions(std::vector<std::string>& inputHeadMovement);
+void analyseTailMovement(Knot exHead,Knot& Tail,Knot Head,direction lastDir);
+KnotMovementRecorder makeMoves(std::vector<direction>& directions);
+
+struct Knot
+{
+public:
+Knot(int posx,int posy):X{posx},Y{posy}{};
+void move(direction dir)
+{
+      switch(dir)
+    {
+        case RIGHT: X++;break;
+        case LEFT: X--;break;
+        case UP: Y++;break;
+        case DOWN: Y--;break;
+    }  
+}
+int showX()
+{
+    return X;
+}
+int showY()
+{
+    return Y;
+}
+void changeX(int newX)
+{
+    X=newX;
+}
+void changeY(int newY)
+{
+    Y=newY;
+}
+void showCoordinates()
+{
+    std::cout<<"X: "<<X<<"Y: "<<Y<<"\n";
+}
+
+private:
+int X;
+int Y;
+};
+
+class KnotMovementRecorder
+{
+    public:
+    void checkIfRecorded(Knot newPosition)
+    {
+        for(auto recordedPos:positions)
+        {
+            if((recordedPos.showX()==newPosition.showX())&&(recordedPos.showY()==newPosition.showY()))
+            {
+                return;
+            }
+        }
+        recordNewKnotPosition(newPosition);
+    }
+    void recordNewKnotPosition(Knot newPosition)
+    {
+        positions.push_back(newPosition);
+    }
+    int countRecordedPositions()
+    {
+        int positionCounter{};
+        for(auto position:positions)
+        {
+            positionCounter++;
+        }
+        return positionCounter;
+    }
+
+    private:
+    std::vector<Knot> positions;
+};
+
+int main()
+{
+// std::vector<std::string> inputDirections=readInputFile();
+// std::vector<direction> instructions=convertToInstructions(inputDirections);
+std::vector<direction> instructions{RIGHT,RIGHT,RIGHT,RIGHT,UP,UP,UP,UP,LEFT,LEFT,LEFT,DOWN,RIGHT,RIGHT,RIGHT,RIGHT,DOWN,LEFT,LEFT,LEFT,LEFT,LEFT,RIGHT,RIGHT};
+KnotMovementRecorder TailRecorder=makeMoves(instructions);
+std::cout<<TailRecorder.countRecordedPositions();
+    return 0;
+}
+
+std::vector<std::string> readInputFile()
+{
+    std::vector<std::string> headMovement;
+    std::fstream answerFile;
+    answerFile.open("headInstructions.txt");
+    std::string line;
+    while (getline(answerFile, line))
+    {
+     headMovement.push_back(line);
+    }
+    return headMovement;
+}
+
+direction convertToDirection(char letter)
+{
+    direction readDir;
+    switch(letter)
+    {
+        case 'U': readDir=UP;break;
+        case 'D': readDir=DOWN;break;
+        case 'R': readDir=RIGHT;break;
+        case 'L': readDir=LEFT;break;
+    }
+    return readDir;
+}
+
+ std::vector<direction> convertToInstructions(std::vector<std::string>& inputHeadMovement)
+{
+    std::vector<direction>instruction;
+for (auto line:inputHeadMovement)
+{
+    for(int i=0;i<line.at(2)-'0';i++)
+    {
+        instruction.push_back(convertToDirection(line.at(0)));
+    }
+}
+return instruction;
+}
+
+void analyseTailMovement(Knot exHead,Knot& Tail,Knot Head,direction lastDir)
+{
+    if((abs(Tail.showX()-Head.showX())>1)||(abs(Tail.showY()-Head.showY())>1))
+    {
+        Tail.changeX(exHead.showX());
+        Tail.changeY(exHead.showY());
+    }
+}
+
+
+
+KnotMovementRecorder makeMoves(std::vector<direction>& directions)
+{
+KnotMovementRecorder TailRecorder;
+Knot Head(0,0);
+Knot Tail(0,0);
+for(auto direction:directions)
+{
+    Knot temp=Head;
+    Head.move(direction);
+    analyseTailMovement(temp,Tail,Head,direction);
+    //Tail.showCoordinates();
+    TailRecorder.checkIfRecorded(Tail);
+}
+return TailRecorder;
+}
