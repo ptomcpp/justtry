@@ -34,55 +34,76 @@ for(int i=0;i<5;i++)
 int checkVisibilityUp(std::vector<std::vector<int>>& treesHeight,int posX,int posY,int targetHeight)
 {
     int visible=0;
-    for(int i=0;i<posY;i++)
+    std::cout<<" POSITION X:"<<posX<<" POSITION Y: "<<posY<<std::endl;
+    for(int i=posY-1;i>=0;i--)
     {
-        if(targetHeight<=treesHeight.at(i).at(posX))
-        {visible=false;
-        i=posY;
+
+        if(targetHeight>treesHeight.at(i).at(posX))
+        {
+            visible++;
         }
-        visible++;
+        else
+        {
+            visible++;
+            i=0;
+        }
+        
     }
-    std::cout<<"checking Up "<<posX<<" "<<posY<<" "<<targetHeight<<"  "<<visible<<"\n";
+    std::cout<<"checking Up "<<posX<<" "<<posY<<" "<<targetHeight<<"  "<<std::max(1,visible)<<"\n";
     return std::max(1,visible);
 }
 int checkVisibilityDown(std::vector<std::vector<int>>& treesHeight,int posX,int posY,int targetHeight)
 {
     int  visible=0;
-    for(int i=treesHeight.size()-1;i>posY;i--)
+    for(int i=posY+1;i<=treesHeight.size()-1;i++)
     {
-        if(targetHeight<=treesHeight.at(i).at(posX))
-        {visible=false;
-        i=posY;
-        }
+        if(targetHeight>treesHeight.at(i).at(posX))
+        {
         visible++;
+        }
+        else
+        {
+            visible++;
+            i=treesHeight.size()+1;
+        }
     }
-    std::cout<<"checking Down "<<posX<<" "<<posY<<" "<<targetHeight<<"  "<<visible<<"\n";
+    std::cout<<"checking Down "<<posX<<" "<<posY<<" "<<targetHeight<<"  "<<std::max(1,visible)<<"\n";
     return std::max(1,visible);
 }
 int checkVisibilityLeft(std::vector<std::vector<int>>& treesHeight,int posX,int posY,int targetHeight)
 {
     int visible=0;
-    for(int i=0;i<posX;i++)
+    for(int i=posX-1;i>=0;i--)
     {
-        if(targetHeight<=treesHeight.at(posY).at(i))
-        {visible=false;
-        i=posX;
-        }
+        if(targetHeight>treesHeight.at(posY).at(i))
+        {
         visible++;
+        }
+        else
+        {
+            visible++;
+            i=-1;
+        }
+        
     }
-    std::cout<<"checking Left "<<posX<<" "<<posY<<" "<<targetHeight<<"  "<<visible<<"\n";
+    std::cout<<"checking Left "<<posX<<" "<<posY<<" "<<targetHeight<<"  "<<std::max(1,visible)<<"\n";
     return std::max(1,visible);
 }
 int checkVisibilityRight(std::vector<std::vector<int>>& treesHeight,int posX,int posY,int targetHeight)
 {
     int visible=0;
-    for(int i=treesHeight.size()-1;i>posX;i--)
+    for(int i=posX+1;i<=treesHeight.size()-1;i++)
     {
-        if(targetHeight<=treesHeight.at(posY).at(treesHeight.size()-i))
-        {visible=false;
-        i=posX;
-        }
+        if(targetHeight>treesHeight.at(posY).at(i))
+        {
         visible++;
+        }
+        else
+        {
+            visible++;
+            i=treesHeight.size()+1;
+        }
+        
     }
     std::cout<<"checking Right "<<posX<<" "<<posY<<" "<<targetHeight<<"  "<<std::max(1,visible)<<"\n";
     return std::max(1,visible);
@@ -103,6 +124,7 @@ for(int i=0;i<treesHeight.size();i++)
     for(int j=0;j<treesHeight.size();j++)
     {
         if(checkVisibility(treesHeight,i,j)>maxVisibility)
+        if(checkVisibility(treesHeight,i,j)>maxVisibility)
         {maxVisibility=checkVisibility(treesHeight,i,j);
         }
     }
@@ -112,20 +134,20 @@ return maxVisibility;
 
 int main()
 {
-std::vector<std::vector<int>> treesHeight;
-std::vector<std::string> inputTreesHeight=readInputFile();
-convertToTable(inputTreesHeight,treesHeight);
 // std::vector<std::vector<int>> treesHeight;
-// std::vector<int> vec1={3,0,3,7,3};
-// std::vector<int> vec2={32,5,5,1,2};
-// std::vector<int> vec3={6,5,3,3,2};
-// std::vector<int> vec4={3,3,5,4,9};
-// std::vector<int> vec5={3,5,3,9,0};
-// treesHeight.push_back(vec1);
-// treesHeight.push_back(vec2);
-// treesHeight.push_back(vec3);
-// treesHeight.push_back(vec4);
-// treesHeight.push_back(vec5);
+// std::vector<std::string> inputTreesHeight=readInputFile();
+// convertToTable(inputTreesHeight,treesHeight);
+std::vector<std::vector<int>> treesHeight;
+std::vector<int> vec1={3,0,3,7,3};
+std::vector<int> vec2={2,5,5,1,2};
+std::vector<int> vec3={6,5,3,3,2};
+std::vector<int> vec4={3,3,5,4,9};
+std::vector<int> vec5={3,5,3,8,0};
+treesHeight.push_back(vec1);
+treesHeight.push_back(vec2);
+treesHeight.push_back(vec3);
+treesHeight.push_back(vec4);
+treesHeight.push_back(vec5);
 std::cout<<countNonVisibleTrees(treesHeight);
     return 0;
 }
