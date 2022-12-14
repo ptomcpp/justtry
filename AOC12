@@ -1,0 +1,187 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <cmath>
+#include <stack>
+std::vector<std::string> readInputFile();
+std::vector<std::vector<int>> convertToMap(std::vector<std::string> &readMap);
+
+class Node
+{
+public:
+    Node(int coX, int coY, int length, std::vector<std::vector<int>> *map)
+    {
+        coordX = coX;
+        coordY = coY;
+        lengthOfWay = length + 1;
+        height = (*map).at(coordY).at(coordX);
+    }
+
+    int getX()
+    {
+        return coordX;
+    }
+    int getY()
+    {
+        return coordY;
+    }
+    int getHeight()
+    {
+        return height;
+    }
+    int getLength()
+    {
+        return lengthOfWay;
+    }
+    bool operator==(Node other)
+    {
+        if ((coordX == other.getX()) && (coordY == other.getY()))
+        {
+            return true;
+        }
+        return false;
+    }
+
+private:
+    int height;
+    int lengthOfWay;
+    int coordX;
+    int coordY;
+    std::vector<std::vector<int>> *map;
+};
+static std::vector<Node> usedNodes;
+
+bool checkIfUsed(Node newNode)
+{
+    for (auto nodes : usedNodes)
+    {
+        if (newNode == nodes)
+            return true;
+    }
+    usedNodes.push_back(newNode);
+    return false;
+}
+
+int addToStack(std::stack<Node> &Nodes, std::vector<std::vector<int>> *map)
+{
+    int cos=-1;
+    Node top = Nodes.top();
+     //std::cout<<"top: "<<top.getX()<<"  "<<top.getY()<<"  "<<top.getHeight()<<  std::endl;
+    Nodes.pop();
+
+    if (top.getHeight() == 26)
+    {
+        std::cout <<"TUTAJ!!"<< top.getLength() << "\n";
+        cos= top.getLength();
+    }
+
+    if (top.getY() > 0)
+    {
+        Node upper(top.getX(), top.getY() - 1, top.getLength(), map);
+        if ((upper.getHeight() - top.getHeight() <= 1) && (!checkIfUsed(upper)))
+        {
+            Nodes.push(upper);
+            //std::cout << "upper: " << Nodes.top().getX() << "  " << Nodes.top().getY() << "\n";
+        }
+    }
+    if (top.getY() < (*map).size() - 1)
+    {
+        Node lower(top.getX(), top.getY() + 1, top.getLength(), map);
+        if ((lower.getHeight() - top.getHeight() <= 1) && (!checkIfUsed(lower)))
+        {
+            Nodes.push(lower);
+            //std::cout << "lower: " << Nodes.top().getX() << "  " << Nodes.top().getY() << "\n";
+        }
+    }
+    if (top.getX() > 0)
+    {
+        Node left(top.getX() - 1, top.getY(), top.getLength(), map);
+        if ((left.getHeight() - top.getHeight() <= 1) && (!checkIfUsed(left)))
+        {
+            Nodes.push(left);
+            //std::cout << "left: " << Nodes.top().getX() << "  " << Nodes.top().getY() << "\n";
+        }
+    }
+    if (top.getX() < (*map).at(0).size() - 1)
+    {
+        Node right(top.getX() + 1, top.getY(), top.getLength(), map);
+        if ((right.getHeight() - top.getHeight() <= 1) && (!checkIfUsed(right)))
+        {
+            Nodes.push(right);
+            //std::cout << "right: " << Nodes.top().getX() << "  " << Nodes.top().getY() <<"  "<<Nodes.top().getHeight()<<"  "<<Nodes.top().getLength()<< "\n";
+        }
+    }
+    return cos;
+}
+
+int main()
+{
+    std::vector<std::string> maps = readInputFile();
+    std::vector<std::vector<int>> mapConverted = convertToMap(maps);
+    std::vector<std::vector<int>> *map = &mapConverted;
+    Node start(0, 0, 0, map);
+    // for(auto line:mapConverted)
+    // {
+    //     for(auto in:line)
+    //     {
+    //         std::cout<<in<<" ";
+    //     }
+    //     std::cout<<std::endl;
+    // }
+
+    std::stack<Node> way;
+    way.push(start);
+    int cos = -1;
+
+
+    // do
+    // {
+    //     i++;
+for(int i=0;i<50000;i++)
+{
+    cos = addToStack(way, map);
+    if(cos>0)std::cout<<cos<<std::endl;
+}
+std::cout<<"ZALAZLEM!"<<cos;
+
+
+
+    // } while (i<100);
+    // std::cout<<cos;
+
+    return 0;
+}
+
+std::vector<std::vector<int>> convertToMap(std::vector<std::string> &readMap)
+{
+    std::vector<std::vector<int>> map;
+    for (auto line : readMap)
+    {
+        std::vector<int> oneRow;
+        for (auto letter : line)
+        {
+            if (letter == 'S')
+                oneRow.push_back(0);
+            else if (letter == 'E')
+                oneRow.push_back(static_cast<int>(123 - 'a'));
+            else
+                oneRow.push_back(static_cast<int>(letter - 'a'));
+        }
+        map.push_back(oneRow);
+    }
+
+    return map;
+};
+
+std::vector<std::string> readInputFile()
+{
+    std::vector<std::string> map;
+    std::fstream answerFile;
+    answerFile.open("map.txt");
+    std::string line;
+    while (getline(answerFile, line))
+    {
+        map.push_back(line);
+    }
+    return map;
+}
