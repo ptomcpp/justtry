@@ -1,0 +1,149 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <cmath>
+
+std::vector<std::string> readInputFile()
+{
+    std::vector<std::string> map;
+    std::fstream answerFile;
+    answerFile.open("map.txt");
+    std::string line;
+    while (getline(answerFile, line))
+    {
+        map.push_back(line);
+    }
+    return map;
+}
+
+void addWalls(int coord1,int coord2, int coordEnd1, int coordEnd2,std::vector<std::vector<char>>& map)
+    {
+        if(coord1!=coordEnd1)
+        {
+        for(int i=coord1;i<=coordEnd1;i++)
+            {
+                map.at(coord2).at(i)='#';
+            }
+        }
+        else if(coord2>coordEnd2)
+        {
+            for(int i=coord2;i<=coordEnd2;i--)
+            {
+                map.at(i).at(coord1)='#';
+            }
+        }
+        else if(coord2<coordEnd2)
+        {
+            for(int i=coord2;i<=coordEnd2;i++)
+            {
+                map.at(i).at(coord1)='#';
+            }
+        }
+
+    }
+
+void readWalls(std::string instruction, std::vector<std::vector<char>>& map)
+{
+    int coord1,coord2;
+    for(int i=0;i<instruction.length();i++)
+    {
+        if(i==0) 
+        {   coord1=stoi(instruction.substr(0,3));
+            coord2=stoi(instruction.substr(4,3));
+             std::cout<<coord1<<"  "<<coord2;
+        }
+        if(instruction.at(i)=='>')
+        {
+            int coordX=stoi(instruction.substr(i+2,3));
+            int coordY=stoi(instruction.substr(i+6,3));
+            std::cout<<std::endl<<coordX<<"  "<<coordY;
+            addWalls(coord1,coord2,coordX,coordY,map);
+            coord1=coordX;
+            coord2=coordY;
+        }
+
+    }
+}
+
+void initializeMap(std::vector<std::vector<char>>& map)
+{
+for(int i=0;i<210;i++)
+{
+    std::vector<char> v1;
+for(int j=0;j<510;j++)
+{
+    v1.push_back('.');
+}
+map.push_back(v1);
+}
+}
+
+void fillMapWithWalls(std::vector<std::string>& input,std::vector<std::vector<char>>&map)
+{
+for(auto s:input)
+{
+readWalls(s,map);
+}
+}
+
+void showMap(const std::vector<std::vector<char>>&map)
+{
+for(auto line:map)
+{
+    for(auto ch:line)
+    {
+        std::cout<<ch;
+    }
+    std::cout<<std::endl;
+}
+}
+
+bool moveSand(int &coordX,int &coordY,std::vector<std::vector<char>>&map)
+{
+    if(map.at(coordY+1).at(coordX)!='#')
+    {
+        coordY++;
+        return true;
+    }
+    else if(map.at(coordY+1).at(coordX-1)!='#')
+    {
+        coordY++;
+        coordX--;
+        return true;
+    }
+    else if(map.at(coordY+1).at(coordX+1)!='#')
+    {
+        coordY++;
+        coordX++;
+        return true;
+    }
+    else
+    {
+        map.at(coordY).at(coordX)='#';
+        return false;
+    }
+}
+
+int  putSand(std::vector<std::vector<char>>&map)
+{
+    int sandCoordX=500;
+    int sandCoordY=0;
+    bool movesuccesfull=true;
+    int counter=0;
+    while(movesuccesfull)
+    {
+        movesuccesfull=moveSand(sandCoordX,sandCoordY,map);
+        if(sandCoordY==199)
+    }
+}
+
+int main()
+{
+    std::vector<std::string> input=readInputFile();
+    std::vector<std::vector<char>>map;
+    initializeMap(map);
+    fillMapWithWalls(input,map);
+    showMap(map);
+    return 0;
+}
+
