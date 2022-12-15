@@ -1,0 +1,131 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <cmath>
+
+std::vector<std::string> readInputFile()
+{
+    std::vector<std::string> map;
+    std::fstream answerFile;
+    answerFile.open("input.txt");
+    std::string line;
+    while (getline(answerFile, line))
+    {
+        map.push_back(line);
+    }
+    return map;
+}
+
+class coords
+{
+public:
+    coords(int coordX, int coordY)
+    {
+        X = coordX;
+        Y = coordY;
+    };
+    int getX()
+    {
+        return X;
+    }
+    int getY()
+    {
+        return Y;
+    }
+
+private:
+    int X;
+    int Y;
+};
+
+int showArea(coords sensor, coords beacon)
+{
+    return (abs(sensor.getX() - beacon.getX()) + abs(sensor.getY() - beacon.getY()));
+}
+
+coords readSensors(std::string inputLine)
+{
+    int firstEqualSign = inputLine.find('=');
+    int firstComma = inputLine.find(',');
+    std::string substr = (inputLine.substr(firstEqualSign + 1, firstComma - 12));
+    int coordX = stoi(substr);
+    int nextStopsign = inputLine.find(':');
+    substr = inputLine.substr(firstComma + 4, nextStopsign - firstComma - 4);
+    int coordY = stoi(substr);
+    coords newcoord(coordX, coordY);
+    return newcoord;
+}
+
+std::vector<coords> createSensors(std::vector<std::string> &input)
+{
+    std::vector<coords> sensors;
+    for (auto line : input)
+    {
+        sensors.push_back(readSensors(line));
+    }
+    return sensors;
+}
+
+std::vector<coords> createBeacons(std::vector<std::string> &input)
+{
+    std::vector<coords> sensors;
+    for (auto line : input)
+    {
+        line = line.substr(40);
+        sensors.push_back(readSensors(line));
+    }
+    return sensors;
+}
+
+bool checkIfAlreadyChecked(std::vector<int> &checkedPosition, int position)
+{
+    for (auto pos : checkedPosition)
+    {
+        if (pos == position)
+            return true;
+    }
+    return false;
+}
+
+std::vector<int> addingCheckedPositions(std::vector<coords> &sensors, std::vector<coords> &beacons)
+{
+    std::vector<int> checkedPosition;
+
+    for (int i = 0; i < sensors.size(); i++)
+    {
+        int area = showArea(sensors.at(i), beacons.at(i));
+        int distance = abs(sensors.at(i).getY() - 2000000);
+        if (distance < area)
+        {
+            // if (!checkIfAlreadyChecked(checkedPosition, sensors.at(i).getX()))
+            // {
+            //     checkedPosition.psuh_back(sensors.at(i).getX());
+            // }
+            for (int j = 0; j < (area - distance);j++)
+            {
+                // if (!checkIfAlreadyChecked(checkedPosition, sensors.at(i).getX() - j))
+                // {
+                    checkedPosition.push_back(sensors.at(i).getX() - j);
+                // }
+                // if (!checkIfAlreadyChecked(checkedPosition, sensors.at(i).getX() + j))
+                // {
+                    checkedPosition.push_back(sensors.at(i).getX() + j);
+                // }
+            }
+        }
+    }
+    return checkedPosition;
+}
+
+int main()
+{
+    std::vector<std::string> input = readInputFile();
+    coords one(-1, 1);
+    coords two(-5, 5);
+    std::vector<coords> sensors = createSensors(input);
+    std::vector<coords> beacons = createBeacons(input);
+    std::vector<int> checkedPositionsInRow2M=addingCheckedPositions(sensors,beacons);
+    std::cout<<checkedPositionsInRow2M.size();
+
+    return 0;
+}
