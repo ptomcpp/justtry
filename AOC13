@@ -1,0 +1,127 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <cmath>
+class packetData;
+class packet;
+std::vector<std::string> readInputFile();
+bool packetComparison(packet left, packet right);
+int packetDataComparison(packetData left, packetData right);
+
+class packet
+{
+
+size_t showPacketsAmount()
+{
+    return packets.size();
+}
+
+std::vector<packetData> showPackets()
+{
+    return packets;
+}
+
+private:
+std::vector<packetData> packets;
+
+};
+
+
+class packetData
+{
+    public:
+    packetData(std::vector<int> inputArray)
+    {
+        arrayData=inputArray;
+        arrayTypeData=true;
+    }
+    packetData(int inputIntiger)
+    {
+        numberData=inputIntiger;
+        arrayTypeData=true;
+    }
+    void operator=(packetData right)
+    {
+        numberData=right.giveInt();
+        arrayData=right.giveArray();
+    }
+
+    bool operator==(int num)
+    {
+        if(numberData==num)return true;
+        return false;
+    }
+
+    bool arrayTypeOfData()
+    {
+        return arrayTypeData;
+    }
+
+    std::vector<int> giveArray()
+    {
+        return arrayData;
+    }
+
+    int giveInt()
+    {
+        return numberData;
+    }
+
+
+    private:
+    std::vector<int> arrayData;
+    int numberData{};
+    bool arrayTypeData;
+
+};
+
+
+
+int main()
+{
+    packetData newPacket(5);
+    bool cos=newPacket==5;
+    return 0;
+}
+
+
+
+std::vector<std::string> readInputFile()
+{
+    std::vector<std::string> map;
+    std::fstream answerFile;
+    answerFile.open("map.txt");
+    std::string line;
+    while (getline(answerFile, line))
+    {
+        map.push_back(line);
+    }
+    return map;
+}
+
+bool packetComparison(packet left, packet right)
+{
+
+return true;
+}
+
+int packetDataComparison(packetData left, packetData right)
+{
+    if((left.arrayTypeOfData())&&(right.arrayTypeOfData()))
+    {
+
+    }
+    else if((!left.arrayTypeOfData())&&(!right.arrayTypeOfData()))
+    {
+        if(left.giveInt()<right.giveInt())return 1;
+        if(left.giveInt()>right.giveInt())return -1;
+        else return 0;
+    }
+    else if(left.arrayTypeOfData())
+    {
+        std::vector<int> //!!!!!!!!!!!!!!!!!!!
+        packetData temp()
+    }
+
+
+}
