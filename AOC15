@@ -38,6 +38,96 @@ private:
     int Y;
 };
 
+class Scope
+{
+    public:
+    Scope(int minVal, int maxVal)
+    {
+        minimal.push_back(minVal);
+        maximal.push_back(maxVal);
+    };
+
+    void addScope(int minVal, int maxVal)
+    {
+        bool added=false;
+        for(int i=0;i<minimal.size();i++)
+        {
+            if(minVal>minimal.at(i)&&minVal<maximal.at(i))
+            {
+                added=true;
+                maximal.at(i)=(maxVal>maximal.at(i))?maxVal:maximal.at(i);
+                i=minimal.size();
+            }   
+            else if(minVal<minimal.at(i)&&maxVal>maximal.at(i))
+            {
+                added=true;
+                maximal.at(i)=maxVal;
+                minimal.at(i)=minVal;
+                i=minimal.size();
+            }  
+            else if(maxVal>minimal.at(i)&&maxVal<maximal.at(i))
+            {
+                added=true;
+                minimal.at(i)=(minVal<minimal.at(i))?minVal:minimal.at(i);
+                i=minimal.size();
+            }   
+        }
+        if(!added)
+        {
+            minimal.push_back(minVal);
+            maximal.push_back(maxVal);
+        }
+    }
+
+    std::vector<int> returnMinimal()
+    {
+        return minimal;
+    }
+        std::vector<int> returnMaximal()
+    {
+        return maximal;
+    }
+
+    void printScopes()
+    {
+        for(int i=0;i<minimal.size();i++)
+        {
+            std::cout<<"min: "<<minimal.at(i)<<" maximal: "<<maximal.at(i)<<std::endl;
+        }
+    }
+    int returnSize()
+    {
+        int size{};
+        for(int i=0;i<minimal.size();i++)
+        {
+            size+=maximal.at(i)-minimal.at(i)+1;
+        }
+        return size;
+    }
+    void erase(int num)
+    {
+        minimal.erase(minimal.begin(),minimal.begin()+num);
+        maximal.erase(maximal.begin(),maximal.begin()+num);
+    }
+
+
+
+    private:
+    std::vector<int> minimal;
+    std::vector<int> maximal;
+};
+
+    Scope combineScopes(Scope scope)
+    {
+        int size=scope.returnMinimal().size();
+        for(int i=0;i<size;i++)
+        {
+            scope.addScope(scope.returnMinimal().at(i),scope.returnMaximal().at(i));
+        }
+        scope.erase(size);
+        return scope;
+    }
+
 int showArea(coords sensor, coords beacon)
 {
     return (abs(sensor.getX() - beacon.getX()) + abs(sensor.getY() - beacon.getY()));
@@ -87,9 +177,9 @@ bool checkIfAlreadyChecked(std::vector<int> &checkedPosition, int position)
     return false;
 }
 
-std::vector<int> addingCheckedPositions(std::vector<coords> &sensors, std::vector<coords> &beacons)
+Scope addingCheckedPositions(std::vector<coords> &sensors, std::vector<coords> &beacons)
 {
-    std::vector<int> checkedPosition;
+    
 
     for (int i = 0; i < sensors.size(); i++)
     {
@@ -97,6 +187,7 @@ std::vector<int> addingCheckedPositions(std::vector<coords> &sensors, std::vecto
         int distance = abs(sensors.at(i).getY() - 2000000);
         if (distance < area)
         {
+           // Scope checkedPosition();
             // if (!checkIfAlreadyChecked(checkedPosition, sensors.at(i).getX()))
             // {
             //     checkedPosition.psuh_back(sensors.at(i).getX());
@@ -119,13 +210,27 @@ std::vector<int> addingCheckedPositions(std::vector<coords> &sensors, std::vecto
 
 int main()
 {
-    std::vector<std::string> input = readInputFile();
-    coords one(-1, 1);
-    coords two(-5, 5);
-    std::vector<coords> sensors = createSensors(input);
-    std::vector<coords> beacons = createBeacons(input);
-    std::vector<int> checkedPositionsInRow2M=addingCheckedPositions(sensors,beacons);
-    std::cout<<checkedPositionsInRow2M.size();
-
+    // std::vector<std::string> input = readInputFile();
+    // // coords one(-1, 1);
+    // // coords two(-5, 5);
+    // std::vector<coords> sensors = createSensors(input);
+    // std::vector<coords> beacons = createBeacons(input);
+    // std::vector<int> checkedPositionsInRow2M=addingCheckedPositions(sensors,beacons);
+    // std::cout<<checkedPositionsInRow2M.size();
+    Scope one(0,4);
+    one.addScope(-17,5);
+     one.addScope(2,6);
+     one.addScope(-11,5);
+     one.addScope(-23,-19);
+     one.addScope(22,44);
+     one.addScope(-20,-15);
+      one.addScope(38,47);
+      one.addScope(-40,40);
+     Scope two=combineScopes(one);
+    one.printScopes();
+    std::cout<<std::endl;
+    two.printScopes();
+    std::cout<<std::endl<<two.returnSize();
+    std::cout<<std::endl<<one.returnSize();
     return 0;
 }
