@@ -1,0 +1,248 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <cmath>
+#include <deque>
+class Shape
+{
+    public:
+    Shape(std::vector<std::string> givenShapes)
+    :shapes{givenShapes}{};
+    
+    void printShape()
+    {
+        for(auto line:shapes)
+        {
+            std::cout<<line<<std::endl;
+        }
+    }
+    int showSize()
+    {
+        return shapes.size();
+    }
+    std::string giveRow(int row)
+    {
+        return shapes.at(row);
+    }
+
+
+    private:
+    std::vector<std::string> shapes;
+};
+
+class Chamber
+{
+public:
+Chamber()
+{
+    height=0;
+}
+Chamber(std::deque<std::string> cham)
+{
+    height=0;
+    chamber=cham;
+}
+
+int returnChamberSize()
+{
+    return chamber.size();
+}
+void updateHeight()
+{
+    int actualHeight=height;
+    for(int i=chamber.size()-1;i>=actualHeight;i--)
+    {
+        for(auto charInLine:chamber.at(i))
+        {
+            if(charInLine=='X')
+            {
+                height++;
+                break;
+            }
+        }
+    }
+}
+int returnHeight()
+{
+    return height;
+}
+void showChamber()
+{
+    for(auto line:chamber)
+    {
+        std::cout<<line<<std::endl;
+    }
+}
+
+void addShape(Shape newShape)
+{
+    int summaryStartHeight=3+height+newShape.showSize();
+
+    if(chamber.size()<summaryStartHeight)
+    {
+        int chamSize=chamber.size();
+        for(int i=0;i<summaryStartHeight-chamSize;i++)
+        {
+            chamber.push_front("       ");
+        }
+    }
+    for(int i=0;i<newShape.showSize();i++)
+    {
+        chamber.at(i)=newShape.giveRow(newShape.showSize()-i-1);
+    }
+}
+
+void updateChamber()
+{
+    for(auto line:chamber)
+    {
+        for(auto chars:line)
+        {
+            if(chars=='#')chars=='X';
+        }
+    }
+}
+
+void moveShape()
+{
+    for(int i=0;i<chamber.size();i++)
+    {
+        for(int j=0;j<chamber.at(i).size();j++)
+        {
+            char actualChar=chamber.at(i).at(j);
+            if(actualChar=='X')
+            {
+                if(chamber.at(i+1).at(j)=='X')
+                {
+                    updateChamber();
+                    j=chamber.at(i).size();
+                    i=chamber.size();
+                }
+            }
+        }
+    }
+
+}
+
+
+private:
+std::deque<std::string> chamber;
+int height;
+};
+
+Shape createShape(int whichTypeOfShape);
+std::vector<std::string> readInputFile();
+void setRocksSet(std::vector<Shape>&);
+
+
+
+
+
+
+int main()
+{
+    std::vector<Shape> RockSet;
+    setRocksSet(RockSet);
+
+    std::string s1="   ";
+    std::string s2="  XXXX ";
+    std::string s3="  XXX ";
+    std::string s4="  XXX ";
+    std::string s5="  X ";
+    std::deque<std::string> vec1;
+    vec1.push_back(s1);
+    vec1.push_back(s2);
+    vec1.push_back(s3);
+    vec1.push_back(s4);
+    vec1.push_back(s5);
+    Chamber ch1(vec1);
+    ch1.updateHeight();
+    ch1.showChamber();
+    std::cout<<"___________________________"<<std::endl;
+    Shape newOne=createShape(3);
+    ch1.addShape(newOne);
+    ch1.updateHeight();
+    ch1.showChamber();  
+
+    
+
+    return 0;
+}
+
+std::vector<std::string> readInputFile()
+{
+    std::vector<std::string> map;
+    std::fstream answerFile;
+    answerFile.open("input.txt");
+    std::string line;
+    while (getline(answerFile, line))
+    {
+        map.push_back(line);
+    }
+    return map;
+}
+
+Shape createShape(int whichTypeOfShape)
+{
+    std::vector<std::string> newShapes;
+    switch(whichTypeOfShape)
+    {
+        
+        case 1:
+        {
+            std::string line="  #### ";
+            newShapes.push_back(line);
+            break;
+        }
+        case 2:
+        {
+            std::string line="   #   ";
+            newShapes.push_back(line);
+            line="  ###  ";
+            newShapes.push_back(line);
+            line="   #   ";
+            newShapes.push_back(line);
+            break; 
+        }
+        case 3:
+        {
+            std::string line="  ###  ";;
+            newShapes.push_back(line);
+            line="    #  ";
+            newShapes.push_back(line);
+            line="    #  ";
+            newShapes.push_back(line);
+            break;   
+        }
+        case 4:
+        {
+            std::string line="  #    ";
+            newShapes.push_back(line);
+            line="  #    ";
+            newShapes.push_back(line);
+            line="  #    ";
+            newShapes.push_back(line);
+            line="  #    ";
+            newShapes.push_back(line);
+            break;   
+        }
+            case 5:
+        {
+            std::string line="  ##   ";
+            newShapes.push_back(line);
+            line="  ##   ";
+            newShapes.push_back(line);
+            break;   
+        }
+    }
+    Shape createdShape(newShapes);
+    return createdShape;
+}
+
+void setRocksSet(std::vector<Shape> &RocksSet)
+{
+    for(int i=1;i<6;i++)
+    {
+        RocksSet.push_back(createShape(i));
+    }
+}
